@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		505B0A6D2DA822A200445D6E /* List Photo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "List Photo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		501877D32DAA8B6A00288F48 /* List Photo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "List Photo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -46,16 +46,8 @@
 			isa = PBXGroup;
 			children = (
 				505B0A6F2DA822A200445D6E /* List Photo */,
-				505B0A6E2DA822A200445D6E /* Products */,
+				501877D32DAA8B6A00288F48 /* List Photo.app */,
 			);
-			sourceTree = "<group>";
-		};
-		505B0A6E2DA822A200445D6E /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				505B0A6D2DA822A200445D6E /* List Photo.app */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -80,7 +72,7 @@
 			packageProductDependencies = (
 			);
 			productName = "List Photo";
-			productReference = 505B0A6D2DA822A200445D6E /* List Photo.app */;
+			productReference = 501877D32DAA8B6A00288F48 /* List Photo.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -108,7 +100,7 @@
 			mainGroup = 505B0A642DA822A200445D6E;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 505B0A6E2DA822A200445D6E /* Products */;
+			productRefGroup = 505B0A642DA822A200445D6E;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -149,6 +141,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "List Photo/Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -176,6 +169,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "List Photo/Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;

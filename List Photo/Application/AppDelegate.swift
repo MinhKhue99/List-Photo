@@ -18,9 +18,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             // SceneDelegate will handle window setup
         } else {
             // iOS 12 and earlier setup
+
+            let apiService = APIService()
+            let picsumClient = PicsumClient(apiService: apiService)
+            let photoRepository = PhotosRepositoryImpl(picsumClient: picsumClient)
+            let useCase = GetPhotosUseCaseImpl(repository: photoRepository)
+            let viewModel = PhotosViewModel(getPhotosUseCase: useCase)
+            let viewController = PhotoListViewController(viewModel: viewModel)
+
             window = UIWindow(frame: UIScreen.main.bounds)
-            let rootVC = ViewController()
-            window?.rootViewController = UINavigationController(rootViewController: rootVC)
+            window?.rootViewController = UINavigationController(rootViewController: viewController)
             window?.makeKeyAndVisible()
         }
 

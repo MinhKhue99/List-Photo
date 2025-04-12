@@ -18,11 +18,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
-        let window = UIWindow(windowScene: windowScene)
-        let rootVC = ViewController()
-        window.rootViewController = UINavigationController(rootViewController: rootVC)
-        window.makeKeyAndVisible()
-        self.window = window
+
+        let apiService = APIService()
+        let picsumClient = PicsumClient(apiService: apiService)
+        let photoRepository = PhotosRepositoryImpl(picsumClient: picsumClient)
+        let useCase = GetPhotosUseCaseImpl(repository: photoRepository)
+        let viewModel = PhotosViewModel(getPhotosUseCase: useCase)
+        let viewController = PhotoListViewController(viewModel: viewModel)
+
+        window = UIWindow(windowScene: windowScene)
+        window?.rootViewController = UINavigationController(rootViewController: viewController)
+        window?.makeKeyAndVisible()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
