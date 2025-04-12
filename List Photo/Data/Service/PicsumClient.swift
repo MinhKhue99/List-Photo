@@ -21,10 +21,10 @@ struct PicsumClient {
         apiService.request(endpoint) { (result: Result<[PhotoDTO], Error>) in
             switch result {
             case .success(let photos):
-                Logger.shared.debugPrint("photos: \(photos)", fuction: "getPhotos")
+                Logger.shared.debugPrint("photos: \(photos)", function: "getPhotos")
                 completion(.success(photos))
             case .failure(let error):
-                Logger.shared.debugPrint("error: \(error)", fuction: "getPhotos")
+                Logger.shared.debugPrint("error: \(error)", function: "getPhotos")
                 completion(.failure(error))
             }
         }

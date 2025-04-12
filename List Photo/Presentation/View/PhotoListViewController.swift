@@ -66,6 +66,7 @@ class PhotoListViewController: UIViewController {
     private func setupTableView() {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.dataSource = self
+        tableView.delegate = self
         tableView.register(PhotoCell.self, forCellReuseIdentifier: PhotoCell.identifier)
         tableView.separatorStyle = .none
 
@@ -121,7 +122,8 @@ extension PhotoListViewController: UITableViewDataSource, UITableViewDelegate {
         let contentHeight = scrollView.contentSize.height
         let frameHeight = scrollView.frame.size.height
 
-        if offsetY > contentHeight - frameHeight * 2 {
+        guard !viewModel.isLoading else { return }
+        if offsetY > contentHeight - frameHeight * 1.5 {
             viewModel.loadMorePhotos()
         }
     }

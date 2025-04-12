@@ -17,13 +17,13 @@ class Logger {
         extra1: String = #file,
         extra2: String = #function,
         extra3: Int = #line,
-        fuction: Any? =  nil,
+        function: Any? =  nil,
         plain: Bool = false) {
             if (plain) {
                 print(message)
             } else {
                 let fileName = (extra1 as NSString).lastPathComponent
-                print("DEBUG: \(String(describing: fuction))")
+                print("DEBUG: \(String(describing: function))")
                 print("[\(fileName)] line \(extra3): \(message)\n")
             }
         }

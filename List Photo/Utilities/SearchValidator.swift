@@ -31,12 +31,6 @@ struct SearchValidator {
     static func isValid(_ input: String) -> Bool {
         return input == sanitizeInput(input)
     }
-//    static func sanitizeInput(_ input: String) -> String {
-//            // Only allow alphanumeric and spaces, limit to 15 characters
-//            let allowedCharacters = CharacterSet.alphanumerics.union(.whitespaces)
-//            let filtered = input.unicodeScalars.filter { allowedCharacters.contains($0) }
-//            return String(String.UnicodeScalarView(filtered)).trimmingCharacters(in: .whitespacesAndNewlines).prefix(15).description
-//        }
 }
 
 extension Character {

@@ -9,6 +9,7 @@ import UIKit
 
 class PhotoCell: UITableViewCell {
     static let identifier = "PhotoCell"
+    private var imageLoadTask: URLSessionDataTask?
 
     let photoImageView: UIImageView = {
         let imageView = UIImageView()
@@ -66,6 +67,14 @@ class PhotoCell: UITableViewCell {
         updateAppearance()
     }
 
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageLoadTask?.cancel()
+        imageLoadTask = nil
+        photoImageView.image = nil
+        authorLabel.text = nil
+    }
+
     private func updateAppearance() {
         if let textColor = UIColor(named: "TextColor") {
             authorLabel.textColor = textColor
@@ -74,7 +83,6 @@ class PhotoCell: UITableViewCell {
             authorLabel.textColor = .black
             sizeLabel.textColor = .black
         }
-
     }
 
     required init?(coder: NSCoder) {
@@ -84,16 +92,15 @@ class PhotoCell: UITableViewCell {
     func configure(with photo: Photo) {
         authorLabel.text = photo.author
         sizeLabel.text = "Size: \(photo.width)×\(photo.height)"
+        imageLoadTask?.cancel()
+        photoImageView.image = nil
 
         if let url = URL(string: photo.downloadURL) {
-            DispatchQueue.global().async {
-                if let data = try? Data(contentsOf: url),
-                   let image = UIImage(data: data) {
-                    DispatchQueue.main.async {
-                        self.photoImageView.image = image
-                    }
-                }
+            imageLoadTask = ImageLoader.shared.loadImage(from: url) { [weak self] image in
+                self?.photoImageView.image = image
             }
+        } else {
+            photoImageView.image = UIImage(named: "placeholder")
         }
     }
 }
