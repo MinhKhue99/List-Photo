@@ -20,14 +20,12 @@ class PhotoCell: UITableViewCell {
     let authorLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
-        label.textColor = .black
         return label
     }()
 
     let sizeLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
-        label.textColor = .black
         return label
     }()
 
@@ -54,13 +52,29 @@ class PhotoCell: UITableViewCell {
             photoImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             photoImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             photoImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            photoImageView.heightAnchor.constraint(equalTo: photoImageView.widthAnchor, multiplier: 0.6), // 3:5
+            photoImageView.heightAnchor.constraint(equalTo: photoImageView.widthAnchor, multiplier: 0.6),
 
             stackView.topAnchor.constraint(equalTo: photoImageView.bottomAnchor, constant: 8),
             stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
             stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
             stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
         ])
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        updateAppearance()
+    }
+
+    private func updateAppearance() {
+        if let textColor = UIColor(named: "TextColor") {
+            authorLabel.textColor = textColor
+            sizeLabel.textColor = textColor
+        } else {
+            authorLabel.textColor = .black
+            sizeLabel.textColor = .black
+        }
+
     }
 
     required init?(coder: NSCoder) {
@@ -71,7 +85,6 @@ class PhotoCell: UITableViewCell {
         authorLabel.text = photo.author
         sizeLabel.text = "Size: \(photo.width)×\(photo.height)"
 
-        // Load image
         if let url = URL(string: photo.downloadURL) {
             DispatchQueue.global().async {
                 if let data = try? Data(contentsOf: url),

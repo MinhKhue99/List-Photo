@@ -12,10 +12,12 @@ class PhotoListViewController: UIViewController {
     private let viewModel: PhotosViewModel
     private let refreshControl = UIRefreshControl()
     private let searchBar = UISearchBar()
+    let debouncer = Debouncer(delay: 0.4)
 
     init(viewModel: PhotosViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        self.viewModel.delegate = self
     }
 
     required init?(coder: NSCoder) {
@@ -23,8 +25,7 @@ class PhotoListViewController: UIViewController {
     }
 
     private func setupSearchBar() {
-        searchBar.placeholder = "Search by author or ID"
-        searchBar.backgroundColor = .white
+        searchBar.placeholder = "Search by author or id"
         searchBar.delegate = self
         navigationItem.titleView = searchBar
     }
@@ -35,6 +36,17 @@ class PhotoListViewController: UIViewController {
         return tableView
     }()
 
+    private let loadingLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Loading..."
+        label.textColor = .gray
+        label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        label.textAlignment = .center
+        label.isHidden = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -43,17 +55,12 @@ class PhotoListViewController: UIViewController {
         setupSearchBar()
         setupTableView()
         bindViewModel()
-        viewModel.getPhotos()
+        viewModel.loadInitialPhotos()
         setupRefreshControl()
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-//        navigationController?.setNavigationBarHidden(true, animated: animated)
-    }
-
     override var prefersStatusBarHidden: Bool {
-        return false // or true if you want it hidden
+        return false
     }
 
     private func setupTableView() {
@@ -64,6 +71,12 @@ class PhotoListViewController: UIViewController {
 
         view.addSubview(tableView)
 
+        view.addSubview(loadingLabel)
+        NSLayoutConstraint.activate([
+            loadingLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loadingLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 40)
+        ])
+
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
@@ -73,21 +86,7 @@ class PhotoListViewController: UIViewController {
     }
 
     private func bindViewModel() {
-        viewModel.onUpdate = { [weak self] in
-            DispatchQueue.main.async {
-                self?.tableView.reloadData()
-                self?.refreshControl.endRefreshing()
 
-            }
-        }
-
-        viewModel.onError = { [weak self] error in
-            DispatchQueue.main.async {
-                let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default))
-                self?.present(alert, animated: true)
-            }
-        }
     }
 
     private func setupRefreshControl() {
@@ -96,31 +95,53 @@ class PhotoListViewController: UIViewController {
     }
 
     @objc private func didPullToRefresh() {
-        viewModel.getPhotos()
+        viewModel.loadInitialPhotos()
     }
 
 }
 
-extension PhotoListViewController: UITableViewDataSource {
+extension PhotoListViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.photos.count
+        let data = viewModel.filteredPhotos.isEmpty ? viewModel.photos : viewModel.filteredPhotos
+        return data.count
     }
 
-    func tableView(_ tableView: UITableView,
-                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: PhotoCell.identifier, for: indexPath) as? PhotoCell else {
             return UITableViewCell()
         }
-
-        let photo = viewModel.photos[indexPath.row]
+        let data = viewModel.filteredPhotos.isEmpty ? viewModel.photos : viewModel.filteredPhotos
+        let photo = data[indexPath.row]
         cell.configure(with: photo)
         return cell
+    }
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let frameHeight = scrollView.frame.size.height
+
+        if offsetY > contentHeight - frameHeight * 2 {
+            viewModel.loadMorePhotos()
+        }
     }
 }
 
 extension PhotoListViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        viewModel.search(query: searchText)
+        debouncer.run {
+            let sanitized = SearchValidator.sanitizeInput(searchText)
+
+            if sanitized != searchText {
+                searchBar.text = sanitized
+            }
+
+            if sanitized.isEmpty {
+                self.viewModel.resetSearch()
+            } else {
+                self.viewModel.search(query: sanitized)
+            }
+        }
     }
 
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -128,3 +149,33 @@ extension PhotoListViewController: UISearchBarDelegate {
     }
 }
 
+extension PhotoListViewController: PhotosViewModelDelegate {
+
+    func didLoadInitialPhotos() {
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+            self.refreshControl.endRefreshing()
+        }
+    }
+
+    func didLoadMorePhotos(newIndexPaths: [IndexPath]) {
+        tableView.insertRows(at: newIndexPaths, with: .fade)
+    }
+
+    func didChangeLoadingState(isLoading: Bool) {
+        loadingLabel.isHidden = !isLoading
+        if isLoading {
+            loadingLabel.text = "loading..."
+        } else {
+            loadingLabel.text = ""
+        }
+    }
+
+    func didFailWithError(_ error: Error) {
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            self.present(alert, animated: true)
+        }
+    }
+}
