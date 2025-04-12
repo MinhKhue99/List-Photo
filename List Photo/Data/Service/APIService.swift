@@ -8,21 +8,21 @@
 import Foundation
 
 protocol NetworkService {
-    func request<T: Decodable>(_ endpoint: any Endpoint, completion: @escaping (Result<T, any Error>) -> Void)
+    func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping (Result<T, Error>) -> Void)
 }
 
 class APIService: NetworkService {
     private let urlSession: URLSession
-    
+
     init(urlSession: URLSession = .shared) {
         self.urlSession = urlSession
     }
 
-    func request<T: Decodable>(_ endpoint: any Endpoint, completion: @escaping (Result<T, any Error>) -> Void) {
-        var request = URLRequest(url: endpoint.url)
-        request.httpMethod = endpoint.method
-        request.allHTTPHeaderFields = endpoint.headers
-        request.httpBody = endpoint.body
+    func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping (Result<T, Error>) -> Void) {
+        guard let request = endpoint.urlRequest else {
+            completion(.failure(NSError(domain: "InvalidURL", code: -1)))
+            return
+        }
 
         let task = urlSession.dataTask(with: request) { data, response, error in
             if let error = error {
@@ -30,20 +30,14 @@ class APIService: NetworkService {
                 return
             }
 
-            guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
-                completion(.failure(URLError(.badServerResponse)))
-                return
-            }
-
             guard let data = data else {
-                completion(.failure(URLError(.dataNotAllowed)))
+                completion(.failure(NSError(domain: "NoData", code: -2)))
                 return
             }
 
             do {
-                let decoder = JSONDecoder()
-                let decodedData = try decoder.decode(T.self, from: data)
-                completion(.success(decodedData))
+                let decoded = try JSONDecoder().decode(T.self, from: data)
+                completion(.success(decoded))
             } catch {
                 completion(.failure(error))
             }

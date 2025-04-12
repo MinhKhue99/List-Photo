@@ -15,8 +15,10 @@ struct PicsumClient {
         self.apiService = apiService
     }
 
-    func getPhotos(completion: @escaping (Result<[PhotoDTO], Error>) -> Void) {
-        apiService.request(PicsumEndpoint.list(page: 1, limit: 100)) { (result: Result<[PhotoDTO], Error>) in
+    func getPhotos(page: Int, limit: Int, completion: @escaping (Result<[PhotoDTO], Error>) -> Void) {
+        let endpoint = PicsumEndpoint(page: page, limit: limit)
+
+        apiService.request(endpoint) { (result: Result<[PhotoDTO], Error>) in
             switch result {
             case .success(let photos):
                 Logger.shared.debugPrint("photos: \(photos)", fuction: "getPhotos")

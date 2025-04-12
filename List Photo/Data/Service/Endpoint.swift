@@ -8,62 +8,42 @@
 import Foundation
 
 enum HTTPMethods: String {
-    case GET, POST, PUT, DELETE
-}
-
-enum NetworkError: Error {
-    case network(Error)
-    case invalidResponse
-    case noData
-    case decoding(Error)
+    case get = "GET"
 }
 
 protocol Endpoint {
+    var baseURL: String { get }
     var path: String { get }
-    var method: String { get }
-    var headers: [String: String] { get }
+    var method: HTTPMethods { get }
     var queryItems: [URLQueryItem]? { get }
-    var body: Data? { get }
 }
 
 extension Endpoint {
-    var url: URL {
-        var components = URLComponents()
-        components.scheme = "https"
-        components.host = "picsum.photos"
-        components.path = "/v2" + path
-        components.queryItems = queryItems
+    var urlRequest: URLRequest? {
+        var components = URLComponents(string: baseURL + path)
+        components?.queryItems = queryItems
 
-        guard let url = components.url else {
-            fatalError("Failed to construct URL from components: \(components)")
-        }
-        return url
+        guard let url = components?.url else { return nil }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = method.rawValue
+        return request
     }
 }
 
-enum PicsumEndpoint: Endpoint {
-    case list(page: Int, limit: Int)
+struct PicsumEndpoint: Endpoint {
+    var baseURL: String { "https://picsum.photos" }
+    var path: String { "/v2/list" }
 
-    var path: String {
-        switch self {
-        case .list:
-            return "/list"
-        }
-    }
+    let page: Int
+    let limit: Int
 
-    var method: String { HTTPMethods.GET.rawValue }
-
-    var headers: [String: String] { [:] }
+    var method: HTTPMethods { .get }
 
     var queryItems: [URLQueryItem]? {
-        switch self {
-        case .list(let page, let limit):
-            return [
-                URLQueryItem(name: "page", value: String(page)),
-                URLQueryItem(name: "limit", value: String(limit))
-            ]
-        }
+        return [
+            URLQueryItem(name: "page", value: "\(page)"),
+            URLQueryItem(name: "limit", value: "\(limit)")
+        ]
     }
-
-    var body: Data? { nil }
 }

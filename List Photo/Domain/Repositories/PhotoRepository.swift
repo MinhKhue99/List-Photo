@@ -6,5 +6,5 @@
 //
 
 protocol PhotoRepository {
-    func getPhotos(completion: @escaping (Result<[Photo], Error>) -> Void)
+    func getPhotos(page: Int, limit: Int, completion: @escaping (Result<[Photo], Error>) -> Void)
 }

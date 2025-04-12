@@ -12,8 +12,8 @@ class PhotosRepositoryImpl: PhotoRepository {
         self.picsumClient = picsumClient
     }
 
-    func getPhotos(completion: @escaping (Result<[Photo], any Error>) -> Void) {
-        picsumClient.getPhotos {result in
+    func getPhotos(page: Int, limit: Int, completion: @escaping (Result<[Photo], any Error>) -> Void) {
+        picsumClient.getPhotos(page: page, limit: limit) {result in
             switch result {
             case .success(let dtos):
                 let photos = dtos.map { $0.toDomain() }
