@@ -6,5 +6,5 @@
 //
 
 protocol PhotoRepository {
-    func getPhotos(completion: @escaping(([Photo]) -> Void))
+    func getPhotos(completion: @escaping (Result<[Photo], Error>) -> Void)
 }

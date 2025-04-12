@@ -6,7 +6,7 @@
 //
 
 protocol GetPhotosUseCase {
-    func execute(completion: @escaping ([Photo]) -> Void)
+    func execute(completion: @escaping (Result<[Photo], Error>) -> Void)
 }
 
 class GetPhotosUseCaseImpl: GetPhotosUseCase {
@@ -15,7 +15,7 @@ class GetPhotosUseCaseImpl: GetPhotosUseCase {
         self.repository = repository
     }
 
-    func execute(completion: @escaping ([Photo]) -> Void) {
+    func execute(completion: @escaping (Result<[Photo], Error>) -> Void) {
         repository.getPhotos(completion: completion)
     }
 }
