@@ -123,7 +123,7 @@ extension PhotoListViewController: UITableViewDataSource, UITableViewDelegate {
         let frameHeight = scrollView.frame.size.height
 
         guard !viewModel.isLoading else { return }
-        if offsetY > contentHeight - frameHeight * 1.5 {
+        if offsetY > contentHeight - frameHeight * 2 {
             viewModel.loadMorePhotos()
         }
     }
@@ -161,7 +161,7 @@ extension PhotoListViewController: PhotosViewModelDelegate {
     }
 
     func didLoadMorePhotos(newIndexPaths: [IndexPath]) {
-        tableView.insertRows(at: newIndexPaths, with: .fade)
+        tableView.reloadData()
     }
 
     func didChangeLoadingState(isLoading: Bool) {

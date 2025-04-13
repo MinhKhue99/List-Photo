@@ -106,7 +106,7 @@ class PhotosViewModel {
         guard !cleanedText.isEmpty else {
             filteredPhotos = []
             DispatchQueue.main.async {
-                self.delegate?.didFailWithError(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid search query"]))
+                self.delegate?.didFailWithError(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Special characters & emojis are not allowed except !@#$: &*():., <>/\\[]?."]))
                 self.delegate?.didChangeLoadingState(isLoading: false)
             }
             return

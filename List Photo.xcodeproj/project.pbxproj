@@ -6,8 +6,19 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXContainerItemProxy section */
+		5018781B2DAAFE0B00288F48 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 505B0A652DA822A200445D6E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 505B0A6C2DA822A200445D6E;
+			remoteInfo = "List Photo";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		501877D32DAA8B6A00288F48 /* List Photo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "List Photo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		501878172DAAFE0B00288F48 /* List PhotoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "List PhotoTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -21,6 +32,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		501878182DAAFE0B00288F48 /* List PhotoTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "List PhotoTests";
+			sourceTree = "<group>";
+		};
 		505B0A6F2DA822A200445D6E /* List Photo */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -32,6 +48,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		501878142DAAFE0B00288F48 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		505B0A6A2DA822A200445D6E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -47,12 +70,37 @@
 			children = (
 				505B0A6F2DA822A200445D6E /* List Photo */,
 				501877D32DAA8B6A00288F48 /* List Photo.app */,
+				501878172DAAFE0B00288F48 /* List PhotoTests.xctest */,
+				501878182DAAFE0B00288F48 /* List PhotoTests */,
 			);
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		501878162DAAFE0B00288F48 /* List PhotoTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5018781D2DAAFE0B00288F48 /* Build configuration list for PBXNativeTarget "List PhotoTests" */;
+			buildPhases = (
+				501878132DAAFE0B00288F48 /* Sources */,
+				501878142DAAFE0B00288F48 /* Frameworks */,
+				501878152DAAFE0B00288F48 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5018781C2DAAFE0B00288F48 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				501878182DAAFE0B00288F48 /* List PhotoTests */,
+			);
+			name = "List PhotoTests";
+			packageProductDependencies = (
+			);
+			productName = "List PhotoTests";
+			productReference = 501878172DAAFE0B00288F48 /* List PhotoTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		505B0A6C2DA822A200445D6E /* List Photo */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 505B0A802DA822A600445D6E /* Build configuration list for PBXNativeTarget "List Photo" */;
@@ -85,6 +133,10 @@
 				LastSwiftUpdateCheck = 1630;
 				LastUpgradeCheck = 1630;
 				TargetAttributes = {
+					501878162DAAFE0B00288F48 = {
+						CreatedOnToolsVersion = 16.3;
+						TestTargetID = 505B0A6C2DA822A200445D6E;
+					};
 					505B0A6C2DA822A200445D6E = {
 						CreatedOnToolsVersion = 16.3;
 					};
@@ -105,11 +157,19 @@
 			projectRoot = "";
 			targets = (
 				505B0A6C2DA822A200445D6E /* List Photo */,
+				501878162DAAFE0B00288F48 /* List PhotoTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		501878152DAAFE0B00288F48 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		505B0A6B2DA822A200445D6E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -120,6 +180,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		501878132DAAFE0B00288F48 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		505B0A692DA822A200445D6E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -129,7 +196,51 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		5018781C2DAAFE0B00288F48 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 505B0A6C2DA822A200445D6E /* List Photo */;
+			targetProxy = 5018781B2DAAFE0B00288F48 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		5018781E2DAAFE0B00288F48 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KNRS8Y6JMQ;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.khuepm.List-PhotoTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/List Photo.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/List Photo";
+			};
+			name = Debug;
+		};
+		5018781F2DAAFE0B00288F48 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KNRS8Y6JMQ;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.khuepm.List-PhotoTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/List Photo.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/List Photo";
+			};
+			name = Release;
+		};
 		505B0A812DA822A600445D6E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -310,6 +421,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		5018781D2DAAFE0B00288F48 /* Build configuration list for PBXNativeTarget "List PhotoTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5018781E2DAAFE0B00288F48 /* Debug */,
+				5018781F2DAAFE0B00288F48 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		505B0A682DA822A200445D6E /* Build configuration list for PBXProject "List Photo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
