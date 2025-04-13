@@ -8,32 +8,51 @@
 import XCTest
 @testable import List_Photo
 
-class PhotoDTOTests: XCTestCase {
-    func testToDomain_MapsCorrectly() {
-        // Arrange
-        let dto = PhotoDTO(id: "1", author: "John", width: 800, height: 600, download_url: "url1")
-        let expectedPhoto = Photo(id: "1", author: "John", width: 800, height: 600, downloadURL: "url1")
+final class PhotoDTOTests: XCTestCase {
 
-        // Act
-        let photo = dto.toDomain()
+    func test_toDomain_shouldMapAllFieldsCorrectly() {
+        // Given
+        let dto = PhotoDTO(
+            id: "1",
+            author: "John",
+            width: 800,
+            height: 600,
+            download_url: "url1"
+        )
 
-        // Assert
-        XCTAssertEqual(photo.id, expectedPhoto.id, "IDs should match")
-        XCTAssertEqual(photo.author, expectedPhoto.author, "Authors should match")
-        XCTAssertEqual(photo.width, expectedPhoto.width, "Widths should match")
-        XCTAssertEqual(photo.height, expectedPhoto.height, "Heights should match")
-        XCTAssertEqual(photo.downloadURL, expectedPhoto.downloadURL, "Download URLs should match")
+        let expected = Photo(
+            id: "1",
+            author: "John",
+            width: 800,
+            height: 600,
+            downloadURL: "url1"
+        )
+
+        // When
+        let actual = dto.toDomain()
+
+        // Then
+        XCTAssertEqual(actual.id, expected.id, "ID should be mapped correctly")
+        XCTAssertEqual(actual.author, expected.author, "Author should be mapped correctly")
+        XCTAssertEqual(actual.width, expected.width, "Width should be mapped correctly")
+        XCTAssertEqual(actual.height, expected.height, "Height should be mapped correctly")
+        XCTAssertEqual(actual.downloadURL, expected.downloadURL, "Download URL should be mapped correctly")
     }
 
-    func testToDomain_EmptyAuthor_StillMaps() {
-        // Arrange
-        let dto = PhotoDTO(id: "1", author: "", width: 800, height: 600, download_url: "url1")
-        let expectedPhoto = Photo(id: "1", author: "", width: 800, height: 600, downloadURL: "url1")
+    func test_toDomain_withEmptyAuthor_shouldStillMapCorrectly() {
+        // Given
+        let dto = PhotoDTO(
+            id: "1",
+            author: "",
+            width: 800,
+            height: 600,
+            download_url: "url1"
+        )
 
-        // Act
-        let photo = dto.toDomain()
+        // When
+        let actual = dto.toDomain()
 
-        // Assert
-        XCTAssertEqual(photo.author, "", "Empty author should map")
+        // Then
+        XCTAssertEqual(actual.author, "", "Empty author should be preserved")
     }
 }
