@@ -22,4 +22,9 @@ class Debouncer {
             DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: workItem)
         }
     }
+
+    func cancel() {
+        workItem?.cancel()
+        workItem = nil
+    }
 }

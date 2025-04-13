@@ -13,6 +13,7 @@ class PhotoListViewController: UIViewController {
     private let refreshControl = UIRefreshControl()
     private let searchBar = UISearchBar()
     let debouncer = Debouncer(delay: 0.4)
+    private var isSearchCancelled = false
 
     init(viewModel: PhotosViewModel) {
         self.viewModel = viewModel
@@ -27,8 +28,17 @@ class PhotoListViewController: UIViewController {
     private func setupSearchBar() {
         searchBar.placeholder = "Search by author or id"
         searchBar.delegate = self
+        searchBar.showsCancelButton = true
         navigationItem.titleView = searchBar
     }
+
+    private var emptyStateLabel: UILabel = {
+        let label = UILabel()
+        label.text = "No results found"
+        label.textAlignment = .center
+        label.isHidden = true
+        return label
+    }()
 
     private let tableView: UITableView = {
         let tableView = UITableView()
@@ -49,14 +59,16 @@ class PhotoListViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
         edgesForExtendedLayout = [.top, .bottom, .left, .right]
         extendedLayoutIncludesOpaqueBars = true
+
+        configureNavigationBar()
         setupSearchBar()
         setupTableView()
-        bindViewModel()
-        viewModel.loadInitialPhotos()
+        setupEmptyStateLabel()
         setupRefreshControl()
+
+        viewModel.loadInitialPhotos()
     }
 
     override var prefersStatusBarHidden: Bool {
@@ -64,21 +76,18 @@ class PhotoListViewController: UIViewController {
     }
 
     private func setupTableView() {
-        tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(PhotoCell.self, forCellReuseIdentifier: PhotoCell.identifier)
         tableView.separatorStyle = .none
 
         view.addSubview(tableView)
-
         view.addSubview(loadingLabel)
+
         NSLayoutConstraint.activate([
             loadingLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            loadingLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 40)
-        ])
+            loadingLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 40),
 
-        NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -86,8 +95,21 @@ class PhotoListViewController: UIViewController {
         ])
     }
 
-    private func bindViewModel() {
+    private func setupEmptyStateLabel() {
+        view.addSubview(emptyStateLabel)
+        emptyStateLabel.translatesAutoresizingMaskIntoConstraints = false
 
+        NSLayoutConstraint.activate([
+            emptyStateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emptyStateLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            emptyStateLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            emptyStateLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+        ])
+    }
+
+    func updateEmptyStateVisibility() {
+        let data = viewModel.isSearching ? viewModel.filteredPhotos : viewModel.photos
+        emptyStateLabel.isHidden = !data.isEmpty
     }
 
     private func setupRefreshControl() {
@@ -96,14 +118,42 @@ class PhotoListViewController: UIViewController {
     }
 
     @objc private func didPullToRefresh() {
+        searchBar.resignFirstResponder()
         viewModel.loadInitialPhotos()
     }
 
+    func configureNavigationBar() {
+        if #available(iOS 13.0, *) {
+            // iOS 13+: Use UINavigationBarAppearance for light/dark mode
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = .systemBackground // Adapts to light/dark mode
+            appearance.titleTextAttributes = [.foregroundColor: UIColor.label]
+            appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.label]
+
+            // Apply to all navigation bar states
+            navigationController?.navigationBar.standardAppearance = appearance
+            navigationController?.navigationBar.compactAppearance = appearance
+            navigationController?.navigationBar.scrollEdgeAppearance = appearance
+
+            // Set tint color for buttons
+            navigationController?.navigationBar.tintColor = .systemBlue
+        } else {
+            // iOS 12: Fallback to classic UINavigationBar properties
+            navigationController?.navigationBar.barStyle = .default // Light mode style
+            navigationController?.navigationBar.barTintColor = .white // Background color
+            navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.black]
+            navigationController?.navigationBar.tintColor = .blue // Button tint
+            navigationController?.navigationBar.isTranslucent = false // Opaque background
+        }
+    }
 }
+
+// MARK: - UITableViewDataSource & UITableViewDelegate
 
 extension PhotoListViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let data = viewModel.filteredPhotos.isEmpty ? viewModel.photos : viewModel.filteredPhotos
+        let data = viewModel.isSearching ? viewModel.filteredPhotos : viewModel.photos
         return data.count
     }
 
@@ -111,7 +161,7 @@ extension PhotoListViewController: UITableViewDataSource, UITableViewDelegate {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: PhotoCell.identifier, for: indexPath) as? PhotoCell else {
             return UITableViewCell()
         }
-        let data = viewModel.filteredPhotos.isEmpty ? viewModel.photos : viewModel.filteredPhotos
+        let data = viewModel.isSearching ? viewModel.filteredPhotos : viewModel.photos
         let photo = data[indexPath.row]
         cell.configure(with: photo)
         return cell
@@ -129,18 +179,28 @@ extension PhotoListViewController: UITableViewDataSource, UITableViewDelegate {
     }
 }
 
+// MARK: - UISearchBarDelegate
+
 extension PhotoListViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        debouncer.run {
+        debouncer.cancel()
+        debouncer.run { [weak self] in
+            guard let self = self else { return }
+
+            if self.isSearchCancelled {
+                self.isSearchCancelled = false
+                return
+            }
+
             let sanitized = SearchValidator.sanitizeInput(searchText)
 
             if sanitized != searchText {
-                searchBar.text = sanitized
+                DispatchQueue.main.async {
+                    searchBar.text = sanitized
+                }
             }
 
-            if sanitized.isEmpty {
-                self.viewModel.resetSearch()
-            } else {
+            if !sanitized.isEmpty {
                 self.viewModel.search(query: sanitized)
             }
         }
@@ -149,7 +209,17 @@ extension PhotoListViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchBar.resignFirstResponder()
     }
+
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        isSearchCancelled = true
+        debouncer.cancel()
+        searchBar.resignFirstResponder()
+        searchBar.text = nil
+        viewModel.resetSearch()
+    }
 }
+
+// MARK: - PhotosViewModelDelegate
 
 extension PhotoListViewController: PhotosViewModelDelegate {
 
@@ -157,19 +227,21 @@ extension PhotoListViewController: PhotosViewModelDelegate {
         DispatchQueue.main.async {
             self.tableView.reloadData()
             self.refreshControl.endRefreshing()
+            self.updateEmptyStateVisibility()
         }
     }
 
     func didLoadMorePhotos(newIndexPaths: [IndexPath]) {
-        tableView.reloadData()
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+            self.updateEmptyStateVisibility()
+        }
     }
 
     func didChangeLoadingState(isLoading: Bool) {
-        loadingLabel.isHidden = !isLoading
-        if isLoading {
-            loadingLabel.text = "loading..."
-        } else {
-            loadingLabel.text = ""
+        DispatchQueue.main.async {
+            self.loadingLabel.isHidden = !isLoading
+            self.loadingLabel.text = isLoading ? "Loading..." : ""
         }
     }
 

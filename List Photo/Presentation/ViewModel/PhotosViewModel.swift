@@ -23,6 +23,7 @@ class PhotosViewModel {
 
     private(set) var photos: [Photo] = []
     private(set) var filteredPhotos: [Photo] = []
+    private(set) var isSearching = false
     private var currentPage = 1
     private let limit = 100
     private var _isLoading = false {
@@ -103,7 +104,9 @@ class PhotosViewModel {
 
     func search(query: String) {
         let cleanedText = SearchValidator.sanitizeInput(query)
+        isSearching = true
         guard !cleanedText.isEmpty else {
+            isSearching = false
             filteredPhotos = []
             DispatchQueue.main.async {
                 self.delegate?.didFailWithError(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Special characters & emojis are not allowed except !@#$: &*():., <>/\\[]?."]))
@@ -132,9 +135,9 @@ class PhotosViewModel {
     }
 
     func resetSearch() {
+        isSearching = false
         filteredPhotos = []
-        DispatchQueue.main.async {
-            self.delegate?.didLoadInitialPhotos()
-        }
+        delegate?.didLoadInitialPhotos()
+        return
     }
 }
